@@ -1,120 +1,114 @@
-const db = require("../config/db");
+const pool = require("../config/db");
 
 // CREATE TASK
-const createTask = (req, res) => {
+const createTask = async (req, res) => {
+  try {
     const { title, description } = req.body;
     const userId = req.user.id;
 
     if (!title || title.length < 3) {
-        return res.status(400).json({ message: "Title must be at least 3 characters" });
+      return res.status(400).json({ message: "Title must be at least 3 characters" });
     }
 
-    db.query(
-        "INSERT INTO tasks (title, description, user_id) VALUES (?, ?, ?)",
-        [title, description, userId],
-        (err, result) => {
-            if (err) {
-                return res.status(500).json({ message: "Error creating task" });
-            }
-            res.status(201).json({ message: "Task created" });
-        }
+    await pool.query(
+      "INSERT INTO tasks (title, description, user_id) VALUES ($1, $2, $3)",
+      [title, description, userId]
     );
+
+    res.status(201).json({ message: "Task created" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Error creating task" });
+  }
 };
 
 // GET TASKS
-const getTasks = (req, res) => {
+const getTasks = async (req, res) => {
+  try {
     const userId = req.user.id;
 
-    db.query(
-        "SELECT * FROM tasks WHERE user_id = ?",
-        [userId],
-        (err, results) => {
-            if (err) {
-                return res.status(500).json({ message: "Error fetching tasks" });
-            }
-            res.json(results);
-        }
+    const result = await pool.query(
+      "SELECT * FROM tasks WHERE user_id = $1",
+      [userId]
     );
+
+    res.json(result.rows);
+
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching tasks" });
+  }
 };
 
 // UPDATE TASK
-const updateTask = (req, res) => {
+const updateTask = async (req, res) => {
+  try {
     const { title, description, status } = req.body;
     const taskId = req.params.id;
     const userId = req.user.id;
 
-    // Status validation
-    const validStatus = ["pending", "completed"];
-    if (status && !validStatus.includes(status)) {
-        return res.status(400).json({ message: "Invalid status" });
+    const result = await pool.query(
+      "UPDATE tasks SET title=$1, description=$2, status=$3 WHERE id=$4 AND user_id=$5 RETURNING *",
+      [title, description, status, taskId, userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Task not found or unauthorized" });
     }
 
-    db.query(
-        "UPDATE tasks SET title=?, description=?, status=? WHERE id=? AND user_id=?",
-        [title, description, status, taskId, userId],
-        (err, result) => {
-            if (err) {
-                return res.status(500).json({ message: "Error updating task" });
-            }
+    res.json({ message: "Task updated" });
 
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ message: "Task not found or unauthorized" });
-            }
-
-            res.json({ message: "Task updated" });
-        }
-    );
+  } catch (err) {
+    res.status(500).json({ message: "Error updating task" });
+  }
 };
 
 // DELETE TASK
-const deleteTask = (req, res) => {
+const deleteTask = async (req, res) => {
+  try {
     const taskId = req.params.id;
     const userId = req.user.id;
 
-    db.query(
-        "DELETE FROM tasks WHERE id=? AND user_id=?",
-        [taskId, userId],
-        (err, result) => {
-            if (err) {
-                return res.status(500).json({ message: "Error deleting task" });
-            }
-
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ message: "Task not found or unauthorized" });
-            }
-
-            res.json({ message: "Task deleted" });
-        }
+    const result = await pool.query(
+      "DELETE FROM tasks WHERE id=$1 AND user_id=$2 RETURNING *",
+      [taskId, userId]
     );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Task not found or unauthorized" });
+    }
+
+    res.json({ message: "Task deleted" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting task" });
+  }
 };
 
-module.exports = { createTask, getTasks, updateTask, deleteTask };
-
-// ADMIN DELETE ANY TASK
-const adminDeleteTask = (req, res) => {
+// ADMIN DELETE
+const adminDeleteTask = async (req, res) => {
+  try {
     const taskId = req.params.id;
 
-    db.query(
-        "DELETE FROM tasks WHERE id=?",
-        [taskId],
-        (err, result) => {
-            if (err) {
-                return res.status(500).json({ message: "Error deleting task" });
-            }
-
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ message: "Task not found" });
-            }
-
-            res.json({ message: "Admin deleted task" });
-        }
+    const result = await pool.query(
+      "DELETE FROM tasks WHERE id=$1 RETURNING *",
+      [taskId]
     );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.json({ message: "Admin deleted task" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting task" });
+  }
 };
 
 module.exports = {
-    createTask,
-    getTasks,
-    updateTask,
-    deleteTask,
-    adminDeleteTask
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+  adminDeleteTask
 };
