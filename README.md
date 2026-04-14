@@ -10,7 +10,7 @@ This project demonstrates backend engineering concepts like authentication, role
 https://task-manager-jet-alpha.vercel.app/
 
 
-Features
+---------------Features--------------------
 
 Authentication & Authorization
 - User Registration & Login
@@ -20,7 +20,7 @@ Authentication & Authorization
 
 ---
 
-Backend (Core)
+-----------------Backend (Core)----------------
 - RESTful API design with versioning (`/api/v1`)
 - CRUD operations for Tasks
 - Protected routes using middleware
@@ -30,110 +30,139 @@ Backend (Core)
 
 ---
 
-Database
+-------------------------Database----------------------
 - PostgreSQL (Neon Cloud)
 - Relational schema design
 - Tables:
+  
   - `users`
   - `tasks`
 
 ---
 
- Frontend
+ ------------------------Frontend----------------------
+ 
 - Built with React.js
+  
 - Features:
+  
   - User Registration & Login UI
+    
   - Dashboard (protected via JWT)
+    
   - Task CRUD operations
+    
   - API integration using Axios
+    
   - Error & success handling
 
 ---
 
-Security Practices
+---------------------Security Practices-------------------
+
 - Password hashing (bcrypt)
+
 - JWT token validation middleware
+
 - Protected routes
+
 - Input validation
+
 - Role-based authorization
 
 ---
 
-Deployment
+------------------------Deployment------------------------
 - Backend: Render
 - Frontend: Vercel
 - Database: Neon (PostgreSQL Cloud)
 
 ---
 
-API Endpoints
+-----API Endpoints----
 
--> Auth Routes
+---------Auth Routes----------------
 
 POST /api/v1/auth/register
+
 POST /api/v1/auth/login
 
--> Task Routes 
+--------Task Routes---------- 
 
 GET /api/v1/tasks
+
 POST /api/v1/tasks
+
 PUT /api/v1/tasks/:id
+
 DELETE /api/v1/tasks/:id
 
--> Admin Route 
+------------Admin Route-------------
 
 DELETE /api/v1/tasks/admin/:id
 
 
-Environment Variables
+------------Environment Variables-------------
+---
 
 Backend (.env)
 
 PORT=5000
+
 DATABASE_URL=your_postgres_connection
+
 JWT_SECRET=your_secret_key
 
 
-Frontend (.env)
+-------------Frontend (.env)-----------
 
 REACT_APP_API_URL=https://your-backend-url/api/v1
+---
 
 
----Installation & Setup
+----------Installation & Setup-------------
 
 Clone Repository
 
 git clone https://github.com/your-username/task-manager.git
+
 cd task-manager
+---
 
 ->  Backend Setup
 
 cd backend
+
 npm install
+
 npm run dev
 
 
-
--> Frontend Setup
+---
+----------------Frontend Setup--------------
 
 cd frontend
+
 npm install
+
 npm start
+---
 
+------------------API Documentation---------------------------
 
-API Documentation
-
-Postman Collection / Swagger (add your link here)
+Postman Collection 
 
 Scalability Considerations
 
 This project is designed with scalability in mind:
 
 Modular architecture (controllers, routes, middleware)
-Easily extendable for:
-Load balancing
 
+Easily extendable for: Load balancing
+---
 
 Author:
+
 Tejesh Gadde
+
 B.Tech CSE | Full Stack Developer
