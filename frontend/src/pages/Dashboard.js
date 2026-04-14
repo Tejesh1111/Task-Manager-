@@ -13,7 +13,7 @@ function Dashboard() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) navigate("/");
-  }, []);
+  }, [navigate]);
 
   const fetchTasks = async () => {
     const res = await API.get("/tasks");
